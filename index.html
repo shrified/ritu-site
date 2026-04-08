@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Ritu ऋतु - Menstrual Health for Rural Nepal</title>
+<meta name="description" content="A free, offline-first Android app for menstrual health literacy, cycle tracking, and health education for women in rural Nepal."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet"/>
+
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  /* Forest greens */
+  --forest-deep:   #0D2818;
+  --forest-dark:   #1B4332;
+  --forest-mid:    #2D6A4F;
+  --forest-muted:  #40916C;
+  --forest-light:  #74C69D;
+  --forest-pale:   #D8F3DC;
+
+  /* Saffron / amber accents */
+  --saffron:       #F4A228;
+  --saffron-light: #FCD078;
+  --saffron-pale:  #FEF3DB;
+
+  /* Warm neutrals */
+  --cream:         #F9F4EC;
+  --warm-white:    #FDFAF5;
+  --bark:          #1A2E1A;
+
+  /* Muted tones */
+  --muted-green:   #4A6741;
+  --muted-text:    #5A7A5A;
+  --border:        rgba(45,106,79,0.15);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--warm-white);
+  color: var(--forest-deep);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 300;
+  overflow-x: hidden;
+}
+
+/* Grain overlay */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 999;
+}
+
+/* ─── HERO ─── */
+.hero {
+  min-height: 100vh;
+  background: var(--forest-deep);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  position: relative;
+  overflow: hidden;
+}
+
+/* large background botanical circle */
+.hero-orb {
+  position: absolute;
+  right: -120px; top: -140px;
+  width: 700px; height: 700px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 40%,
+    rgba(45,106,79,0.35) 0%,
+    rgba(27,67,50,0.18) 50%,
+    transparent 75%);
+  pointer-events: none;
+}
+
+.hero-orb2 {
+  position: absolute;
+  left: -80px; bottom: -100px;
+  width: 450px; height: 450px;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+    rgba(244,162,40,0.08) 0%,
+    transparent 70%);
+  pointer-events: none;
+}
+
+/* mandala */
+.hero-mandala {
+  position: absolute;
+  right: 40px; top: 40px;
+  width: 520px; height: 520px;
+  opacity: 0.055;
+  animation: spin 120s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.hero-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 90px 60px 90px 88px;
+  position: relative;
+  z-index: 2;
+}
+
+.lang-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(116,198,157,0.10);
+  border: 1px solid rgba(116,198,157,0.22);
+  color: rgba(255,255,255,0.5);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 7px 16px;
+  border-radius: 100px;
+  margin-bottom: 44px;
+  width: fit-content;
+}
+.lang-badge span { color: var(--saffron); font-size: 13px; letter-spacing: 0; }
+
+h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(50px, 5.5vw, 78px);
+  color: var(--cream);
+  line-height: 1.02;
+  margin-bottom: 10px;
+}
+h1 em {
+  color: var(--saffron);
+  font-style: italic;
+  font-size: 0.58em;
+  letter-spacing: 0.06em;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.hero-tagline {
+  color: rgba(255,255,255,0.48);
+  font-size: 16px;
+  line-height: 1.75;
+  max-width: 400px;
+  margin: 30px 0 52px;
+}
+.hero-tagline strong { color: rgba(255,255,255,0.82); font-weight: 500; }
+
+.cta-group {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.btn-download {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--saffron);
+  color: var(--forest-deep);
+  text-decoration: none;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 500;
+  font-size: 15px;
+  padding: 16px 30px;
+  border-radius: 6px;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  box-shadow: 0 4px 24px rgba(244,162,40,0.28);
+}
+.btn-download:hover {
+  background: var(--saffron-light);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(244,162,40,0.36);
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255,255,255,0.42);
+  text-decoration: none;
+  font-size: 14px;
+  padding: 16px 4px;
+  border-bottom: 1px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+}
+.btn-ghost:hover { color: var(--forest-light); border-color: var(--forest-light); }
+
+/* hero right / phone */
+.hero-right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+  padding: 60px 88px 60px 20px;
+}
+
+.phone {
+  width: 236px;
+  background: #071a0f;
+  border-radius: 38px;
+  border: 1.5px solid rgba(116,198,157,0.12);
+  padding: 18px 14px;
+  box-shadow:
+    0 40px 100px rgba(0,0,0,0.55),
+    0 0 0 1px rgba(255,255,255,0.03),
+    inset 0 1px 0 rgba(255,255,255,0.06);
+  position: relative;
+  animation: float 7s ease-in-out infinite;
+}
+@keyframes float {
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(-14px); }
+}
+
+.phone-notch {
+  width: 58px; height: 13px;
+  background: #030e07;
+  border-radius: 10px;
+  margin: 0 auto 16px;
+}
+
+.phone-screen {
+  background: linear-gradient(160deg, #0d2214 0%, #071509 100%);
+  border-radius: 24px;
+  padding: 18px 14px;
+  min-height: 390px;
+  overflow: hidden;
+}
+
+.ps-header {
+  color: var(--saffron);
+  font-family: 'Playfair Display', serif;
+  font-size: 17px;
+  text-align: center;
+  margin-bottom: 18px;
+  letter-spacing: 0.03em;
+}
+
+.ps-cycle {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.ps-day {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 7.5px;
+  color: rgba(255,255,255,0.28);
+}
+.ps-day.period  { background: rgba(180,40,40,0.75); color: #fff; }
+.ps-day.fertile { background: rgba(45,106,79,0.5); color: #74c69d; }
+.ps-day.today   { border: 1.5px solid var(--saffron); color: var(--saffron); }
+.ps-day.ovul    { background: var(--forest-mid); color: #fff; }
+
+.ps-pill {
+  background: rgba(116,198,157,0.06);
+  border: 1px solid rgba(116,198,157,0.10);
+  border-radius: 9px;
+  padding: 9px 11px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.ps-pill-icon { font-size: 13px; flex-shrink: 0; }
+.ps-pill-text { font-size: 8.5px; color: rgba(255,255,255,0.45); line-height: 1.4; }
+.ps-pill-text strong { color: rgba(255,255,255,0.82); font-weight: 500; display: block; font-size: 9.5px; margin-bottom: 1px; }
+
+/* ─── STATS ─── */
+.stats {
+  background: var(--forest-dark);
+  padding: 64px 88px;
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: 40px;
+  position: relative;
+  overflow: hidden;
+}
+.stats::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(244,162,40,0.04) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.stat-item { text-align: center; position: relative; z-index: 1; }
+
+.stat-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 50px;
+  color: var(--saffron);
+  line-height: 1;
+  display: block;
+  margin-bottom: 8px;
+}
+.stat-label {
+  font-size: 12.5px;
+  color: rgba(255,255,255,0.42);
+  line-height: 1.5;
+}
+
+/* ─── FEATURES ─── */
+.features {
+  background: var(--warm-white);
+  padding: 110px 88px;
+}
+
+.section-label {
+  font-size: 10.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--forest-muted);
+  font-weight: 500;
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(30px, 3.5vw, 48px);
+  color: var(--forest-deep);
+  line-height: 1.15;
+  max-width: 520px;
+  margin-bottom: 72px;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(2,1fr);
+  gap: 2px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+}
+
+.feature-card {
+  background: var(--warm-white);
+  padding: 50px 46px;
+  transition: background 0.25s;
+}
+.feature-card:hover { background: var(--cream); }
+
+.feat-icon {
+  width: 50px; height: 50px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  margin-bottom: 26px;
+}
+.feat-icon.f1 { background: linear-gradient(135deg, var(--forest-dark), var(--forest-mid)); }
+.feat-icon.f2 { background: linear-gradient(135deg, #1a4a2a, var(--forest-muted)); }
+.feat-icon.f3 { background: linear-gradient(135deg, #7a3a10, #c47d1a); }
+.feat-icon.f4 { background: linear-gradient(135deg, #1a3a4a, #2a6a7a); }
+
+.feat-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  margin-bottom: 14px;
+  color: var(--forest-deep);
+}
+.feat-body {
+  font-size: 14px;
+  color: var(--muted-text);
+  line-height: 1.8;
+}
+
+/* ─── DISTRIBUTION ─── */
+.distro {
+  background: var(--cream);
+  padding: 110px 88px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 88px;
+  align-items: center;
+}
+
+.distro-text p {
+  font-size: 15px;
+  color: var(--muted-text);
+  line-height: 1.85;
+  margin-bottom: 16px;
+}
+.distro-text .section-title { margin-bottom: 24px; }
+
+.distro-badges {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 42px;
+}
+
+.distro-badge {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  background: var(--warm-white);
+  border: 1px solid rgba(45,106,79,0.12);
+  border-radius: 12px;
+  padding: 22px 24px;
+  text-decoration: none;
+  color: var(--forest-deep);
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+}
+.distro-badge:hover {
+  border-color: var(--forest-muted);
+  box-shadow: 0 6px 28px rgba(27,67,50,0.12);
+  transform: translateY(-2px);
+}
+
+.db-icon { font-size: 26px; flex-shrink: 0; line-height: 1; margin-top: 3px; }
+.db-title { font-weight: 500; font-size: 15px; margin-bottom: 4px; color: var(--forest-deep); }
+.db-desc  { font-size: 13px; color: var(--muted-text); line-height: 1.5; }
+.db-tag {
+  display: inline-block;
+  margin-top: 7px;
+  font-size: 10.5px;
+  border-radius: 100px;
+  padding: 2px 10px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.db-tag.gold  { background: rgba(244,162,40,0.12); color: #a06a10; }
+.db-tag.green { background: rgba(45,106,79,0.10);  color: var(--forest-mid); }
+
+/* Privacy card */
+.distro-privacy {
+  background: var(--forest-dark);
+  border-radius: 18px;
+  padding: 52px 44px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(13,40,24,0.22);
+  position: relative;
+  overflow: hidden;
+}
+.distro-privacy::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 220px; height: 220px;
+  border-radius: 50%;
+  background: rgba(116,198,157,0.07);
+  pointer-events: none;
+}
+
+.dp-icon { font-size: 46px; margin-bottom: 20px; display: block; }
+.dp-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 24px;
+  margin-bottom: 14px;
+  color: var(--cream);
+}
+.dp-body {
+  font-size: 14px;
+  color: rgba(255,255,255,0.45);
+  line-height: 1.8;
+  margin-bottom: 30px;
+}
+
+.dp-list {
+  list-style: none;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.dp-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: rgba(255,255,255,0.65);
+}
+.dp-list li::before {
+  content: '-';
+  width: 22px; height: 22px;
+  background: rgba(116,198,157,0.15);
+  color: var(--forest-light);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ─── ABOUT ─── */
+.about {
+  background: var(--forest-deep);
+  padding: 110px 88px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 88px;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+.about::after {
+  content: '';
+  position: absolute;
+  bottom: -100px; left: -100px;
+  width: 400px; height: 400px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(244,162,40,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.about .section-label { color: var(--forest-light); }
+
+.about-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(28px, 3vw, 42px);
+  color: var(--cream);
+  line-height: 1.2;
+  margin-bottom: 26px;
+}
+.about-body {
+  font-size: 15px;
+  color: rgba(255,255,255,0.48);
+  line-height: 1.9;
+  margin-bottom: 14px;
+}
+.about-body strong { color: rgba(255,255,255,0.82); font-weight: 500; }
+
+.about-links {
+  display: flex;
+  gap: 16px;
+  margin-top: 38px;
+  flex-wrap: wrap;
+}
+
+.alink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  padding: 13px 24px;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+.alink.primary {
+  background: var(--saffron);
+  color: var(--forest-deep);
+  box-shadow: 0 4px 20px rgba(244,162,40,0.25);
+}
+.alink.primary:hover { background: var(--saffron-light); transform: translateY(-1px); }
+.alink.outline {
+  border: 1px solid rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.5);
+}
+.alink.outline:hover { border-color: var(--forest-light); color: var(--forest-light); }
+
+/* SDG cards */
+.sdg-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: relative;
+  z-index: 1;
+}
+
+.sdg-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(116,198,157,0.10);
+  border-radius: 12px;
+  padding: 24px 26px;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  transition: background 0.2s, border-color 0.2s;
+}
+.sdg-card:hover {
+  background: rgba(116,198,157,0.06);
+  border-color: rgba(116,198,157,0.20);
+}
+
+.sdg-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 40px;
+  color: var(--saffron);
+  line-height: 1;
+  flex-shrink: 0;
+  min-width: 52px;
+}
+.sdg-info strong { color: var(--cream); font-size: 15px; font-weight: 500; display: block; margin-bottom: 4px; }
+.sdg-info span   { color: rgba(255,255,255,0.38); font-size: 13px; line-height: 1.5; }
+
+/* ─── DIVIDER STRIPE ─── */
+.stripe {
+  background: var(--saffron-pale);
+  border-top: 1px solid rgba(244,162,40,0.20);
+  border-bottom: 1px solid rgba(244,162,40,0.20);
+  padding: 28px 88px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.stripe-text {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 20px;
+  color: #7a5010;
+  flex: 1;
+  text-align: center;
+}
+
+/* ─── FOOTER ─── */
+footer {
+  background: #050f08;
+  padding: 52px 88px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 24px;
+  border-top: 1px solid rgba(116,198,157,0.07);
+}
+
+.footer-brand {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  color: var(--cream);
+}
+.footer-brand em { color: var(--saffron); font-style: italic; }
+
+.footer-note {
+  font-size: 12.5px;
+  color: rgba(255,255,255,0.25);
+  line-height: 1.7;
+  max-width: 360px;
+}
+
+.footer-links { display: flex; gap: 26px; }
+.footer-links a {
+  font-size: 13px;
+  color: rgba(255,255,255,0.28);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.footer-links a:hover { color: var(--forest-light); }
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 960px) {
+  .hero { grid-template-columns: 1fr; }
+  .hero-right { display: none; }
+  .hero-left  { padding: 80px 32px; }
+  .stats      { grid-template-columns: repeat(2,1fr); padding: 52px 32px; }
+  .features   { padding: 72px 32px; }
+  .features-grid { grid-template-columns: 1fr; }
+  .distro     { grid-template-columns: 1fr; padding: 72px 32px; gap: 52px; }
+  .about      { grid-template-columns: 1fr; padding: 72px 32px; gap: 52px; }
+  .stripe     { padding: 24px 32px; }
+  footer      { padding: 40px 32px; flex-direction: column; align-items: flex-start; }
+}
+
+/* ─── ENTRY ANIMATIONS ─── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.lang-badge  { animation: fadeUp 0.6s ease both; }
+h1           { animation: fadeUp 0.7s 0.1s ease both; }
+.hero-tagline{ animation: fadeUp 0.7s 0.22s ease both; }
+.cta-group   { animation: fadeUp 0.7s 0.34s ease both; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════ HERO ══════════════ -->
+<section class="hero">
+
+  <div class="hero-orb"></div>
+  <div class="hero-orb2"></div>
+
+  <!-- mandala -->
+  <svg class="hero-mandala" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="200" cy="200" r="185" stroke="white" stroke-width="0.8"/>
+    <circle cx="200" cy="200" r="148" stroke="white" stroke-width="0.4" stroke-dasharray="3 7"/>
+    <circle cx="200" cy="200" r="108" stroke="white" stroke-width="0.8"/>
+    <circle cx="200" cy="200" r="68"  stroke="white" stroke-width="0.4" stroke-dasharray="2 5"/>
+    <circle cx="200" cy="200" r="28"  stroke="white" stroke-width="0.8"/>
+    <circle cx="200" cy="200" r="6"   fill="white" opacity="0.6"/>
+    <g stroke="white" stroke-width="0.4" opacity="0.8">
+      <line x1="200" y1="15" x2="200" y2="385"/>
+      <line x1="15" y1="200" x2="385" y2="200"/>
+      <line x1="69" y1="69" x2="331" y2="331"/>
+      <line x1="331" y1="69" x2="69" y2="331"/>
+      <line x1="25" y1="125" x2="375" y2="275"/>
+      <line x1="125" y1="25" x2="275" y2="375"/>
+      <line x1="375" y1="125" x2="25" y2="275"/>
+      <line x1="275" y1="25" x2="125" y2="375"/>
+    </g>
+    <g fill="white" opacity="0.7">
+      <circle cx="200" cy="15" r="3.5"/>
+      <circle cx="200" cy="385" r="3.5"/>
+      <circle cx="15" cy="200" r="3.5"/>
+      <circle cx="385" cy="200" r="3.5"/>
+      <circle cx="69" cy="69" r="3.5"/>
+      <circle cx="331" cy="331" r="3.5"/>
+      <circle cx="69" cy="331" r="3.5"/>
+      <circle cx="331" cy="69" r="3.5"/>
+    </g>
+  </svg>
+
+  <div class="hero-left">
+    <div class="lang-badge">
+      <span>ऋतु</span> · English &amp; नेपाली
+    </div>
+
+    <h1>
+      <em>ऋतु · Ritu</em>
+      Health knowledge<br/>that goes where<br/>doctors can't.
+    </h1>
+
+    <p class="hero-tagline">
+      A <strong>free Android app</strong> for adolescent girls and women in rural Nepal - cycle tracking, health education, and period support with <strong>no internet, ever.</strong>
+    </p>
+
+    <div class="cta-group">
+      <a href="https://github.com/YOUR_USERNAME/ritu/releases/latest" class="btn-download" target="_blank" rel="noopener">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Download APK - Free
+      </a>
+      <a href="https://github.com/YOUR_USERNAME/ritu" class="btn-ghost" target="_blank" rel="noopener">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+        </svg>
+        View source on GitHub
+      </a>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="phone">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <div class="ps-header">ऋतु · Ritu</div>
+        <div class="ps-cycle">
+          <div class="ps-day">१</div>
+          <div class="ps-day">२</div>
+          <div class="ps-day period">३</div>
+          <div class="ps-day period">४</div>
+          <div class="ps-day period">५</div>
+          <div class="ps-day period">६</div>
+          <div class="ps-day">७</div>
+          <div class="ps-day">८</div>
+          <div class="ps-day">९</div>
+          <div class="ps-day">१०</div>
+          <div class="ps-day">११</div>
+          <div class="ps-day today">१२</div>
+          <div class="ps-day">१३</div>
+          <div class="ps-day">१४</div>
+          <div class="ps-day fertile">१५</div>
+          <div class="ps-day fertile">१६</div>
+          <div class="ps-day ovul">१७</div>
+          <div class="ps-day fertile">१८</div>
+          <div class="ps-day fertile">१९</div>
+          <div class="ps-day">२०</div>
+          <div class="ps-day">२१</div>
+        </div>
+        <div class="ps-pill">
+          <div class="ps-pill-icon">🌿</div>
+          <div class="ps-pill-text">
+            <strong>Period in 19 days</strong>
+            Cycle day 12 of 28
+          </div>
+        </div>
+        <div class="ps-pill">
+          <div class="ps-pill-icon">📖</div>
+          <div class="ps-pill-text">
+            <strong>Health tip today</strong>
+            Iron-rich foods during your period
+          </div>
+        </div>
+        <div class="ps-pill">
+          <div class="ps-pill-icon">🆘</div>
+          <div class="ps-pill-text">
+            <strong>Period Pain SOS</strong>
+            Offline guidance available
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ STATS ══════════════ -->
+<section class="stats">
+  <div class="stat-item">
+    <span class="stat-num">3.2M</span>
+    <span class="stat-label">women in rural Nepal without reliable healthcare access</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num">88%</span>
+    <span class="stat-label">lack access to accurate menstrual health information</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num">21</span>
+    <span class="stat-label">health education categories, fully available offline</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num">0</span>
+    <span class="stat-label">cost, ads, logins, or data ever leaving your device</span>
+  </div>
+</section>
+
+<!-- ══════════════ FEATURES ══════════════ -->
+<section class="features">
+  <div class="section-label">What Ritu does</div>
+  <h2 class="section-title">Four tools. One mission. No internet.</h2>
+
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feat-icon f1">📅</div>
+      <div class="feat-title">Cycle Tracking & Prediction</div>
+      <p class="feat-body">Accurate period, ovulation, and fertile window prediction using clinically validated calculations - 100% offline. All data lives only on the device. Supports both Bikram Sambat and Gregorian calendars, acknowledging Nepal's national calendar system.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feat-icon f2">📖</div>
+      <div class="feat-title">Health Education in Nepali</div>
+      <p class="feat-body">A curated library across 21 categories - hormones, cramps, anxiety, nutrition - readable in both English and नेपाली with no connectivity needed. Includes myth-busting content that directly addresses harmful traditional practices including Chhaupadi.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feat-icon f3">🆘</div>
+      <div class="feat-title">Period Pain SOS</div>
+      <p class="feat-body">An offline emergency card with tiered responses from mild cramps to severe symptoms. Home remedies, dietary guidance, and clear thresholds for when to seek care - often the first medical guidance these women have ever received about their own bodies.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feat-icon f4">🔍</div>
+      <div class="feat-title">Anonymous Symptom Checker</div>
+      <p class="feat-body">An offline decision-tree where users select symptoms and receive plain-language explanations of possible causes, home management strategies, and warning signs - without internet, registration, or disclosure to anyone.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ QUOTE STRIPE ══════════════ -->
+<div class="stripe">
+  <p class="stripe-text">"For many of these women, Ritu may be the first time they have ever had access to accurate, judgment-free, mother-tongue information about their own bodies."</p>
+</div>
+
+<!-- ══════════════ DISTRIBUTION ══════════════ -->
+<section class="distro">
+  <div class="distro-text">
+    <div class="section-label">Get the app</div>
+    <h2 class="section-title">Available directly - no app store needed.</h2>
+    <p>Ritu covers topics that are medically essential but flagged by commercial app stores. We distribute directly so that no one's access to health information is gatekept by a platform policy.</p>
+    <p>Download the APK once. Everything works from that point on, completely offline.</p>
+
+    <div class="distro-badges">
+      <a href="https://github.com/YOUR_USERNAME/ritu/releases/latest" class="distro-badge" target="_blank" rel="noopener">
+        <div class="db-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="#1B4332">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+          </svg>
+        </div>
+        <div class="db-content">
+          <div class="db-title">Download from GitHub Releases</div>
+          <div class="db-desc">Versioned APK releases with changelogs. Permanent, trusted links. The recommended download method.</div>
+          <span class="db-tag gold">Recommended</span>
+        </div>
+      </a>
+
+      <a href="#" class="distro-badge" target="_blank" rel="noopener">
+        <div class="db-icon">📦</div>
+        <div class="db-content">
+          <div class="db-title">F-Droid - Coming Soon</div>
+          <div class="db-desc">The open-source Android app store. No Google account needed. Ideal for devices without Play Store access.</div>
+          <span class="db-tag green">No Google needed</span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <div class="distro-privacy">
+    <span class="dp-icon">🔒</span>
+    <div class="dp-title">Your data never leaves your phone.</div>
+    <p class="dp-body">In communities where phones are shared within families, privacy is not a preference - it is a safety requirement. Ritu was built with this reality at its core.</p>
+    <ul class="dp-list">
+      <li>No account or registration required</li>
+      <li>No internet connection ever needed</li>
+      <li>No cloud sync or data upload</li>
+      <li>No ads, no tracking, no analytics</li>
+      <li>No data sold or shared - ever</li>
+      <li>Completely free, now and forever</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ══════════════ ABOUT ══════════════ -->
+<section class="about">
+  <div class="about-text">
+    <div class="section-label">About this project</div>
+    <h2 class="about-title">Built with no budget.<br/>Driven by one belief.</h2>
+    <p class="about-body">Ritu was conceived, designed, and built as a solo community initiative by <strong>Shriram Lamichhane</strong>, a Nepali developer committed to using technology as a tool for health equity.</p>
+    <p class="about-body">No funding. No organizational backing. No commercial incentive - only the belief that access to basic health information is a right, not a privilege.</p>
+    <p class="about-body">All content is developed with reference to WHO menstrual health guidelines and Nepal Health Research Council recommendations.</p>
+
+    <div class="about-links">
+      <a href="https://github.com/YOUR_USERNAME/ritu" class="alink primary" target="_blank" rel="noopener">View on GitHub</a>
+      <a href="mailto:your@email.com" class="alink outline">Contact for NGO collaboration</a>
+    </div>
+  </div>
+
+  <div class="sdg-cards">
+    <div class="sdg-card">
+      <div class="sdg-num">3</div>
+      <div class="sdg-info">
+        <strong>Good Health & Well-being</strong>
+        <span>Democratizing menstrual health knowledge for women without healthcare access.</span>
+      </div>
+    </div>
+    <div class="sdg-card">
+      <div class="sdg-num">5</div>
+      <div class="sdg-info">
+        <strong>Gender Equality</strong>
+        <span>Breaking stigma and giving women accurate, judgment-free information about their own bodies.</span>
+      </div>
+    </div>
+    <div class="sdg-card">
+      <div class="sdg-num">10</div>
+      <div class="sdg-info">
+        <strong>Reduced Inequalities</strong>
+        <span>Serving the most underserved demographic - rural women without reliable connectivity.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ FOOTER ══════════════ -->
+<footer>
+  <div class="footer-brand"><em>ऋतु</em> Ritu</div>
+  <div class="footer-note">
+    A free, open-source, offline-first Android app for menstrual health in rural Nepal.<br/>
+    Built by Shriram Lamichhane. All health content follows WHO &amp; NHRC guidelines.
+  </div>
+  <div class="footer-links">
+    <a href="https://github.com/YOUR_USERNAME/ritu" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://github.com/YOUR_USERNAME/ritu/releases" target="_blank" rel="noopener">Releases</a>
+    <a href="https://github.com/YOUR_USERNAME/ritu/issues" target="_blank" rel="noopener">Report Issue</a>
+  </div>
+</footer>
+
+</body>
+</html>
